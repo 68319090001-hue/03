@@ -59,26 +59,42 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
 
-db.ref("room").on("value", snap=>{
+// ===== อ่านค่า realtime =====
+db.ref("room").on("value", snap => {
   const d = snap.val();
-  if(!d) return;
+  if (!d) return;
 
-  document.getElementById("people").innerText = d.people;
+  document.getElementById("people").innerText = d.people ?? 0;
 
   const s = document.getElementById("status");
-  s.innerText = d.light ? "LIGHT ON" : "LIGHT OFF";
-  s.style.color = d.light ? "#22c55e" : "#ef4444";
+  if (d.light) {
+    s.innerText = "LIGHT ON";
+    s.style.color = "#22c55e";
+  } else {
+    s.innerText = "LIGHT OFF";
+    s.style.color = "#ef4444";
+  }
 });
 
+// ===== ปุ่มควบคุม =====
 function lightOn(){
-  db.ref("room").update({ light:true, manual:true });
+  db.ref("room").update({
+    manual: true,
+    command: true
+  });
 }
+
 function lightOff(){
-  db.ref("room").update({ light:false, manual:true });
+  db.ref("room").update({
+    manual: true,
+    command: false
+  });
 }
+
 function autoMode(){
-  db.ref("room").update({ manual:false });
+  db.ref("room").update({
+    manual: false
+  });
 }
 </script>
-</body>
-</html>
+
